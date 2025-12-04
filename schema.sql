@@ -1,5 +1,3 @@
-CREATE DATABASE IF NOT EXISTS foodpos CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE foodpos;
 
 -- LOGIN (usuarios)
 CREATE TABLE IF NOT EXISTS usuarios(
