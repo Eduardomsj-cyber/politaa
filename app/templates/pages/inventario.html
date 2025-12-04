@@ -1,0 +1,103 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+
+<h1>Inventario</h1>
+
+<!-- ====================== MODAL DE CONFIRMACIÓN DE ELIMINACIÓN ====================== -->
+<div id="modalEliminar" class="modal hidden">
+  <div class="modal__backdrop"></div>
+  <div class="modal__card">
+    <button class="modal-close" id="closeEliminarModal">✖</button>
+
+    <h2 id="invModalTitle">¿Seguro que deseas eliminar este producto?</h2>
+
+    <p id="modalMsg" class="hint">Esta acción no se puede deshacer.</p>
+
+    <div class="inline mt-2" style="gap:8px;">
+      <button id="cancelEliminar" class="secondary">Cancelar</button>
+      <button id="confirmEliminar" class="danger">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== MODAL DE PRODUCTO ====================== -->
+<div id="modalInv" class="modal hidden">
+  <div class="modal__backdrop"></div>
+
+  <div class="modal__card">
+
+    <button class="modal-close" id="closeInvModal">✖</button>
+
+    <h2 id="invModalTitle">Producto</h2>
+
+    <form id="prodForm" autocomplete="off">
+      <input type="hidden" name="id">
+
+      <div class="row-3">
+        <div>
+          <label for="pNombre">Nombre</label>
+          <input id="pNombre" type="text" name="nombre" required>
+        </div>
+
+        <div>
+          <label for="pPrecio">Precio</label>
+          <input id="pPrecio" type="number" name="precio" min="0" step="0.01" required>
+        </div>
+
+        <div>
+          <label for="pStock">Stock</label>
+          <input id="pStock" type="number" name="stock" min="0" step="1" required>
+        </div>
+      </div>
+
+      <label class="inline mt-1" style="gap:8px;">
+        <input id="pActivo" type="checkbox" name="activo">
+        Activo (visible para ventas)
+      </label>
+
+      <p id="formMsg" class="mt-1 subtle"></p>
+
+      <div class="inline mt-2" style="gap:8px;">
+        <button type="submit">Guardar</button>
+        <button type="button" class="secondary" id="cancelInv">Cancelar</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<!-- ====================== LISTADO / BUSCADOR ====================== -->
+<section class="card">
+  <header class="menu-toolbar">
+    <input type="text" id="buscar" placeholder="Buscar por nombre…">
+    <div class="inline" style="gap:8px;">
+      <button id="btnBuscar" class="secondary">🔎 Buscar</button>
+      <button id="btnLimpiar" class="ghost">Limpiar</button>
+      <button id="btnNuevo" class="primary">Nuevo</button>
+    </div>
+  </header>
+
+  <div class="table-responsive mt-1">
+    <table id="tabla" class="stack">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Stock</th>
+          <th>Activo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Rellenado por inventario.js -->
+      </tbody>
+    </table>
+  </div>
+
+  <p id="tablaMsg" class="mt-1 subtle"></p>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{{ url_for('static', filename='js/inventario.js') }}"></script>
+{% endblock %}

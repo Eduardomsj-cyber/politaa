@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f97316" />
+  <title>{{ title or "FoodPOS" }}</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- ===== Header / Topbar ===== -->
+<header class="topbar">
+  <a href="{{ url_for('pages.index') }}" class="logo">
+    🍔 Polita
+  </a>
+
+  <button class="menu-btn" id="menuBtn">
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav class="mainnav" id="mainnav">
+    <a class="navlink" href="{{ url_for('pages.index') }}">Inicio</a>
+    <a class="navlink" href="{{ url_for('clientes_pages.clientes_page') }}">Clientes</a>
+    <a class="navlink" href="{{ url_for('inv_pages.inventario_page') }}">Inventario</a>
+    <a class="navlink" href="{{ url_for('pedidos_pages.pedidos_page') }}">Pedidos</a>
+    <a class="navlink" href="{{ url_for('hist_pages.historial_page') }}">Historial</a>
+    <a class="navlink" href="{{ url_for('ing_pages.ingredientes_page') }}">Recetas</a>
+    <a class="navlink danger" href="{{ url_for('auth.api_logout') }}">Salir</a>
+  </nav>
+</header>
+
+
+  <!-- ===== Contenedor principal ===== -->
+  <main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="card mt-1" role="status" aria-live="polite">
+          {% for cat, msg in messages %}
+            <div class="badge" style="margin-right:6px">{{ cat|capitalize }}</div> {{ msg }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ===== Footer independiente ===== -->
+<footer class="footer-shell">
+  <div class="footer-inner">
+    <small>Polita</small>
+  </div>
+</footer>
+
+  <!-- JS del header (menú responsive + indicador activo) -->
+  <script src="{{ url_for('static', filename='js/header.js') }}" defer></script>
+
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

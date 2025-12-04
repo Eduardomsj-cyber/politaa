@@ -1,0 +1,83 @@
+{% extends "layouts/base.html" %}
+
+{% block extra_head %}
+<style>
+  /* Estilos sólo para esta página */
+  .auth-wrap{
+    min-height: calc(100vh - 120px);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .auth-card{
+    width:min(460px, 100%);
+    padding:20px 18px;
+  }
+  .auth-head{
+    display:flex; align-items:center; gap:10px; margin-bottom:8px;
+  }
+  .auth-head .dot{
+    width:10px; height:10px; border-radius:999px; background:var(--primary);
+    box-shadow:0 0 0 6px var(--ring);
+  }
+  .auth-sub{ color:var(--muted); margin:4px 0 14px }
+  .input-group{
+    position:relative;
+  }
+  .input-group .toggle{
+    position:absolute; right:8px; top:50%; transform:translateY(-50%);
+    border:1px solid var(--border); background:#fff; color:var(--fg);
+    padding:6px 10px; border-radius:8px; cursor:pointer;
+  }
+  .foot-actions{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    margin-top:10px;
+  }
+  .hint{ font-size:.9rem; color:var(--muted); margin-top:8px }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <form id="loginForm" class="card auth-card" autocomplete="off">
+    <div class="auth-head">
+      <span class="dot"></span>
+      <h1 style="margin:0">Login</h1>
+    </div>
+    <p class="auth-sub">Ingresa con tu usuario para continuar.</p>
+
+    <label>Usuario</label>
+    <input type="text" name="username" placeholder="Ej. admin" required>
+
+    <label class="mt-2">Contraseña</label>
+    <div class="input-group">
+      <input type="password" name="password" id="pwd" required>
+      <button type="button" class="toggle" id="togglePwd" aria-label="Mostrar u ocultar">Mostrar</button>
+    </div>
+
+    <div class="foot-actions">
+      <label class="inline" style="gap:6px;margin:0">
+        <input type="checkbox" id="remember" style="width:auto"> Recordarme
+      </label>
+      <a class="navlink" href="{{ url_for('pages.index') }}">Volver al inicio</a>
+    </div>
+
+    <button type="submit" class="mt-2" style="width:100%">Entrar</button>
+    <p id="msg" class="hint"></p>
+  </form>
+</div>
+
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+<script>
+  // Mostrar/ocultar contraseña (no toca tu login.js)
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('togglePwd');
+    const inp = document.getElementById('pwd');
+    if(btn && inp){
+      btn.addEventListener('click', ()=>{
+        const show = inp.type === 'password';
+        inp.type = show ? 'text' : 'password';
+        btn.textContent = show ? 'Ocultar' : 'Mostrar';
+      });
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+<h1>Historial</h1>
+
+<div class="card">
+  <div class="row">
+    <div>
+      <label>Desde</label>
+      <input type="date" id="desde">
+    </div>
+    <div>
+      <label>Hasta</label>
+      <input type="date" id="hasta">
+    </div>
+  </div>
+
+  <div class="inline mt-2">
+    <select id="filtroEstado" title="Estado de pedido">
+      <option value="">Todos</option>
+      <option>ABIERTO</option>
+      <option>PAGADO</option>
+      <option>CANCELADO</option>
+    </select>
+    <button id="btnPedidos">Ver pedidos</button>
+    <button class="secondary" id="btnPagos">Ver pagos</button>
+  </div>
+</div>
+
+<div class="card mt-2">
+  <table id="tabla" class="mt-1">
+    <thead></thead>
+    <tbody></tbody>
+  </table>
+  <p id="msg" class="mt-1"></p>
+</div>
+
+<script src="{{ url_for('static', filename='js/historial.js') }}"></script>
+{% endblock %}

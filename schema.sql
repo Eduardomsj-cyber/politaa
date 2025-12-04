@@ -1,0 +1,103 @@
+CREATE DATABASE IF NOT EXISTS foodpos CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE foodpos;
+
+-- LOGIN (usuarios)
+CREATE TABLE IF NOT EXISTS usuarios(
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(60) UNIQUE NOT NULL,
+  password_hash VARCHAR(128) NOT NULL,
+  rol VARCHAR(20) DEFAULT 'cajero',
+  creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CLIENTES
+CREATE TABLE IF NOT EXISTS clientes(
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(120) NOT NULL,
+  telefono VARCHAR(20) UNIQUE,
+  email VARCHAR(120),
+  creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- INVENTARIO (productos)
+CREATE TABLE IF NOT EXISTS productos(
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(120) NOT NULL,
+  precio DECIMAL(10,2) NOT NULL,
+  stock INT NOT NULL DEFAULT 0,
+  activo TINYINT(1) NOT NULL DEFAULT 1
+);
+
+-- PEDIDOS
+CREATE TABLE IF NOT EXISTS pedidos(
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  cliente_id INT,
+  usuario_id INT,
+  fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  estado ENUM('ABIERTO','PAGADO','CANCELADO') DEFAULT 'ABIERTO',
+  total DECIMAL(10,2) NOT NULL DEFAULT 0,
+  FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE SET NULL,
+  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS pedido_linea(
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  pedido_id INT NOT NULL,
+  producto_id INT NOT NULL,
+  precio DECIMAL(10,2) NOT NULL,
+  cantidad INT NOT NULL,
+  FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE,
+  FOREIGN KEY (producto_id) REFERENCES productos(id)
+);
+
+-- HISTORIAL DE VENTAS (pagos)
+CREATE TABLE IF NOT EXISTS pagos(
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  pedido_id INT NOT NULL,
+  metodo ENUM('EFECTIVO','TARJETA','TRANSFERENCIA') NOT NULL,
+  monto DECIMAL(10,2) NOT NULL,
+  fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE
+);
+
+-- RECETAS
+CREATE TABLE IF NOT EXISTS ingredientes(
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(120) NOT NULL,
+  unidad VARCHAR(20) DEFAULT 'pz'
+);
+
+CREATE TABLE IF NOT EXISTS recetas(
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  producto_id INT NOT NULL,
+  rendimiento INT DEFAULT 1,
+  FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS receta_item(
+  receta_id INT NOT NULL,
+  ingrediente_id INT NOT NULL,
+  cantidad DECIMAL(10,2) NOT NULL,
+  PRIMARY KEY (receta_id, ingrediente_id),
+  FOREIGN KEY (receta_id) REFERENCES recetas(id) ON DELETE CASCADE,
+  FOREIGN KEY (ingrediente_id) REFERENCES ingredientes(id) ON DELETE CASCADE
+);
+
+-- MAPA DE UBICACIONES DE CLIENTES
+CREATE TABLE IF NOT EXISTS ubicaciones_cliente(
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  cliente_id INT NOT NULL,
+  lat DECIMAL(10,6) NOT NULL,
+  lng DECIMAL(10,6) NOT NULL,
+  capturado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE CASCADE
+);
+
+-- Datos demo
+INSERT IGNORE INTO usuarios(username, password_hash, rol)
+VALUES ('admin', SHA2('admin', 256), 'admin');
+
+INSERT IGNORE INTO productos(nombre, precio, stock) VALUES
+('Hamburguesa', 60, 10),
+('Hot dog', 18, 20),
+('Burritas', 15, 30);

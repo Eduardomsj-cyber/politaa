@@ -1,0 +1,145 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+<h1 style="margin-bottom:10px;">Recomendaciones para ti</h1>
+
+<div class="menu-shell">
+  <!-- Sidebar categorías -->
+  <aside class="menu-sidebar">
+    <div class="cat-title"><span class="dot"></span> Todas las categorías</div>
+    <nav id="catList" class="cat-list"><!-- JS --></nav>
+  </aside>
+
+  <!-- Grid + toolbar -->
+  <section class="menu-content card">
+    <div class="menu-toolbar">
+      <input id="buscar" placeholder="Buscar producto…">
+      <div class="inline" style="gap:8px">
+        <button class="secondary" id="btnCliente">Cliente</button>
+        <div class="ghost pill" id="pedidoPill" title="Pedido actual" style="display:none"></div>
+      </div>
+    </div>
+
+    <div id="grid" class="menu-grid">
+      <!-- Aquí se muestran los productos con sus imágenes -->
+      {% for producto in productos %}
+      <div class="menu-item">
+        <!-- Imagen del producto -->
+        <img src="{{ producto.imagen_url or '/static/images/default.jpg' }}" alt="{{ producto.nombre }}" class="product-image" style="width:100%; height:auto; object-fit:cover;">
+        
+        <!-- Nombre del producto -->
+        <div class="product-name">{{ producto.nombre }}</div>
+        
+        <!-- Precio del producto -->
+        <div class="product-price">${{ producto.precio }}</div>
+        
+        <!-- Stock del producto -->
+        <div class="product-stock">Stock {{ producto.stock }}</div>
+        
+        <!-- Botón para agregar al carrito -->
+        <button class="btn-agregar" onclick="agregarAlCarrito({{ producto.id }})">Agregar al carrito</button>
+      </div>
+      {% endfor %}
+    </div>
+    <p id="gridMsg" class="mt-2" style="opacity:.85"></p>
+  </section>
+</div>
+
+<!-- Modal para la cantidad -->
+<div id="qtyModal" class="modal hidden" aria-hidden="true">
+  <div class="modal__backdrop" id="qtyBackdrop"></div>
+  <div class="modal__card">
+    <h2 id="modalTitle" style="margin:0 0 6px">Agregar</h2>
+    <p id="modalSubtitle" class="hint">Selecciona la cantidad</p>
+
+    <div class="quick-qty mt-2">
+      <button data-q="1">1</button>
+      <button data-q="2">2</button>
+      <button data-q="3">3</button>
+      <button data-q="5">5</button>
+    </div>
+
+    <label class="mt-2">Cantidad</label>
+    <input id="qtyInput" type="number" min="1" value="1">
+
+    <div class="inline mt-2" style="justify-content:flex-end">
+      <button class="secondary" id="qtyCancel">Cancelar</button>
+      <button id="qtyConfirm">Agregar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para seleccionar o crear un cliente -->
+<div id="cliModal" class="modal hidden" aria-hidden="true">
+  <div class="modal__backdrop" id="cliBackdrop"></div>
+  <div class="modal__card">
+    <h2 style="margin:0 0 8px">Cliente</h2>
+
+    <div class="row">
+      <div>
+        <label>Búsqueda</label>
+        <input id="cliSearch" placeholder="Nombre, teléfono o email">
+        <div id="cliList" class="mt-2" style="max-height:220px; overflow:auto; border:1px solid var(--border); border-radius:12px; padding:8px"></div>
+      </div>
+
+      <div>
+        <label>Nuevo cliente</label>
+        <input id="cliNombre" placeholder="Nombre">
+        <input id="cliTel" class="mt-1" placeholder="Teléfono (opcional)">
+        <input id="cliEmail" class="mt-1" placeholder="Email (opcional)">
+        <button id="cliCrear" class="mt-2">Crear y asignar</button>
+      </div>
+    </div>
+
+    <div class="inline mt-2" style="justify-content:flex-end">
+      <button class="secondary" id="cliClose">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Drawer de confirmación de producto agregado -->
+<aside id="afterAdd" class="drawer hidden" aria-hidden="true">
+  <div class="drawer__card">
+    <div class="drawer__head">
+      <strong>Producto agregado</strong>
+      <button class="ghost" id="drawerClose">✕</button>
+    </div>
+
+    <div class="drawer__row">
+      <div>
+        <div class="drawer__title" id="drawerProd">—</div>
+        <div class="hint" id="drawerQty">—</div>
+      </div>
+      <div class="drawer__price" id="drawerSubtotal">$0.00</div>
+    </div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:10px 0">
+
+    <div class="drawer__row">
+      <div class="hint">Pedido</div>
+      <div class="badge" id="drawerPedido">#—</div>
+    </div>
+    <div class="drawer__row">
+      <div class="hint">Cliente</div>
+      <div id="drawerClienteTxt">N/A</div>
+    </div>
+    <div class="drawer__row">
+      <div class="hint">Líneas</div>
+      <div id="drawerLines">0</div>
+    </div>
+    <div class="drawer__row">
+      <div class="hint">Total</div>
+      <div class="drawer__total" id="drawerTotal">$0.00</div>
+    </div>
+
+    <div class="inline mt-2" style="justify-content:space-between; gap:8px; flex-wrap:wrap">
+      <button class="secondary" id="keepShopping">Seguir comprando</button>
+      <button id="drawerClienteBtn">Asignar cliente</button>
+      <a href="{{ url_for('pedidos_pages.pedidos_page') }}">
+        <button>Ir a Pedidos</button>
+      </a>
+    </div>
+  </div>
+</aside>
+
+<script src="{{ url_for('static', filename='js/menu_ux.js') }}"></script>
+{% endblock %}
